@@ -84,9 +84,25 @@ All four routes auto-documented by FastAPI. Use `GET /question` to pull the next
 
 ---
 
+### Option 3 — Next.js frontend (recommended for full experience)
+
+```bash
+# Start the FastAPI backend first (see Option 1)
+uvicorn api:app --reload
+
+# In a second terminal, start the frontend
+cd frontend
+npm install
+npm run dev
+# Browse http://localhost:3000
+```
+
+The frontend connects to the API at `http://localhost:8000` by default. Change `NEXT_PUBLIC_API_URL` in `frontend/.env.local` to point elsewhere.
+
+---
+
 ## What's Next
 
 - **Fine-tune the generator** on your logged wrong answers (`attempts` table, `correct = 0`) for a tighter question style matched to your gaps.
 - **Add free-text seed questions** — the grader already handles them; just add entries with `"kind": "free"` to `seed_data.py`.
 - **Swap the model** — change `OLLAMA_MODEL` in `.env` to any model you have pulled locally; `ollama_client.py` is the only file that changes.
-- **Web front-end** — the `/question` + `/answer` API is ready to back a React or HTMX UI.

@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
 
+from typing import Any
+
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import db
@@ -19,6 +22,13 @@ app = FastAPI(
     description="Local-first quiz API for the ServiceNow CSA certification.",
     version="0.1.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -52,6 +62,11 @@ class AnswerOut(BaseModel):
     rationale: str      # LLM rationale for free-text; empty for MCQ
     model_answer: str
     explanation: str
+
+
+class VoteIn(BaseModel):
+    question_id: int
+    kind: str           # "up" | "down" | "flag"
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
@@ -105,3 +120,21 @@ def post_answer(body: AnswerIn):
         model_answer=question.answer,
         explanation=question.explanation,
     )
+
+
+@app.get("/stats", tags=["meta"])
+def get_stats() -> Any:
+    """Return per-topic accuracy, exam readiness, question lifecycle, and item quality."""
+    return db.get_stats()
+
+
+@app.post("/vote", tags=["study"])
+def post_vote(body: VoteIn):
+    """Record a thumbs-up, thumbs-down, or flag vote on a question."""
+    if body.kind not in ("up", "down", "flag"):
+        raise HTTPException(status_code=422, detail="kind must be up, down, or flag")
+    question = db.get_question_by_id(body.question_id)
+    if question is None:
+        raise HTTPException(status_code=404, detail="Question not found")
+    db.record_vote(body.question_id, body.kind)
+    return {"recorded": True}

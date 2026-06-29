@@ -42,6 +42,13 @@ def init_db() -> None:
                 score       REAL    NOT NULL,
                 answered_at TEXT    NOT NULL DEFAULT (datetime('now'))
             );
+
+            CREATE TABLE IF NOT EXISTS votes (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                question_id INTEGER NOT NULL REFERENCES questions(id),
+                kind        TEXT    NOT NULL CHECK(kind IN ('up', 'down', 'flag')),
+                voted_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+            );
         """)
 
 
@@ -140,6 +147,120 @@ def record_attempt(
                VALUES (?, ?, ?, ?)""",
             (question_id, user_answer, correct, score),
         )
+
+
+def record_vote(question_id: int, kind: str) -> None:
+    with get_connection() as conn:
+        conn.execute(
+            "INSERT INTO votes (question_id, kind) VALUES (?, ?)",
+            (question_id, kind),
+        )
+
+
+def get_stats() -> dict:
+    with get_connection() as conn:
+        topics = conn.execute("SELECT * FROM topics ORDER BY weight DESC").fetchall()
+        total_q = conn.execute("SELECT COUNT(*) FROM questions").fetchone()[0]
+        total_a = conn.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
+
+        topic_stats = []
+        readiness = 0.0
+        for t in topics:
+            rows = conn.execute(
+                "SELECT correct FROM attempts a JOIN questions q ON q.id = a.question_id "
+                "WHERE q.topic_id = ? ORDER BY a.answered_at DESC LIMIT 10",
+                (t["id"],),
+            ).fetchall()
+            attempt_count = conn.execute(
+                "SELECT COUNT(*) FROM attempts a JOIN questions q ON q.id = a.question_id "
+                "WHERE q.topic_id = ?",
+                (t["id"],),
+            ).fetchone()[0]
+            accuracy = (sum(r["correct"] for r in rows) / len(rows)) if rows else 0.5
+            readiness += t["weight"] * accuracy
+            q_count = conn.execute(
+                "SELECT COUNT(*) FROM questions WHERE topic_id = ?", (t["id"],)
+            ).fetchone()[0]
+            topic_stats.append({
+                "id": t["id"],
+                "name": t["name"],
+                "weight": t["weight"],
+                "accuracy": round(accuracy, 4),
+                "attempt_count": attempt_count,
+                "question_count": q_count,
+            })
+
+        # Question lifecycle counts
+        candidate = conn.execute(
+            "SELECT COUNT(*) FROM questions WHERE source='generated' AND id NOT IN "
+            "(SELECT question_id FROM attempts)"
+        ).fetchone()[0]
+        active = conn.execute(
+            "SELECT COUNT(*) FROM questions WHERE id IN (SELECT question_id FROM attempts)"
+        ).fetchone()[0]
+        golden_ids = conn.execute(
+            "SELECT question_id FROM votes WHERE kind='up' GROUP BY question_id HAVING COUNT(*)>=3"
+        ).fetchone()
+        golden = conn.execute(
+            "SELECT COUNT(*) FROM (SELECT question_id FROM votes WHERE kind='up' "
+            "GROUP BY question_id HAVING COUNT(*)>=3)"
+        ).fetchone()[0]
+        retired = conn.execute(
+            "SELECT COUNT(*) FROM (SELECT question_id FROM votes WHERE kind='flag' "
+            "GROUP BY question_id HAVING COUNT(*)>=2)"
+        ).fetchone()[0]
+
+        # Vote totals per question
+        quality_rows = conn.execute(
+            """SELECT q.id, t.name as topic_name,
+               COUNT(a.id) as attempts,
+               SUM(a.correct) as correct_count,
+               (SELECT COUNT(*) FROM votes v WHERE v.question_id=q.id AND v.kind='up') as up_votes,
+               (SELECT COUNT(*) FROM votes v WHERE v.question_id=q.id AND v.kind='down') as down_votes,
+               (SELECT COUNT(*) FROM votes v WHERE v.question_id=q.id AND v.kind='flag') as flag_votes
+               FROM questions q
+               JOIN topics t ON t.id = q.topic_id
+               LEFT JOIN attempts a ON a.question_id = q.id
+               GROUP BY q.id HAVING attempts > 0
+               ORDER BY attempts DESC LIMIT 10""",
+        ).fetchall()
+
+    quality = []
+    for r in quality_rows:
+        diff = round(r["correct_count"] / r["attempts"], 2) if r["attempts"] else None
+        net_votes = r["up_votes"] - r["down_votes"] - r["flag_votes"]
+        if r["flag_votes"] >= 2:
+            status = "retired"
+        elif r["up_votes"] >= 3:
+            status = "golden"
+        elif diff is not None and diff > 0.9:
+            status = "too easy"
+        else:
+            status = "active"
+        quality.append({
+            "id": f"Q#{r['id']}",
+            "topic": r["topic_name"],
+            "difficulty": diff,
+            "up_votes": r["up_votes"],
+            "down_votes": r["down_votes"],
+            "flag_votes": r["flag_votes"],
+            "net_votes": net_votes,
+            "status": status,
+        })
+
+    return {
+        "topics": topic_stats,
+        "total_questions": total_q,
+        "total_attempts": total_a,
+        "exam_readiness": round(readiness, 4),
+        "lifecycle": {
+            "candidate": candidate,
+            "active": active,
+            "golden": golden,
+            "retired": retired,
+        },
+        "quality": quality,
+    }
 
 
 # ── CLI smoke-test ────────────────────────────────────────────────────────────
