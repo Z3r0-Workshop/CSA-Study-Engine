@@ -52,7 +52,7 @@ def main() -> None:
         if user_answer == "Q":
             break
 
-        is_correct, _ = submit_answer(question, user_answer)
+        is_correct, score, rationale = submit_answer(question, user_answer)
         total += 1
         correct += is_correct
 
@@ -61,7 +61,11 @@ def main() -> None:
         else:
             print(f"\n  [-] Wrong.  The answer is: {question.answer}")
 
-        print(f"  {question.explanation}")
+        # Free-text: show LLM rationale + score; MCQ: show baked-in explanation
+        if rationale:
+            print(f"  Score: {score:.0%}  —  {rationale}")
+        else:
+            print(f"  {question.explanation}")
         print(f"\n  Score: {correct}/{total}", end="")
         if total:
             print(f"  ({correct / total:.0%})")

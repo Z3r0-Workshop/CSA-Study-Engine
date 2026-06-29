@@ -21,17 +21,20 @@ def next_question() -> tuple[Topic, Question]:
     return topic, generate_question(topic)
 
 
-def submit_answer(question: Question, user_answer: str) -> tuple[int, float]:
-    """Grade *user_answer*, persist the attempt, return (correct 0|1, score 0.0|1.0).
+def submit_answer(question: Question, user_answer: str) -> tuple[int, float, str]:
+    """Grade *user_answer*, persist the attempt.
 
-    MCQ: exact case-insensitive match against question.answer.
-    Free-text: always scores 0.5 until grader.py is wired in (Phase 6).
+    Returns (correct 0|1, score 0.0..1.0, rationale).
+    MCQ:       exact case-insensitive match; rationale is empty (cli shows explanation).
+    Free-text: LLM grades via grader.py; score >= 0.6 counts as correct.
     """
     if question.kind == "mcq":
         correct = int(user_answer.strip().lower() == question.answer.strip().lower())
-        score = float(correct)
+        score, rationale = float(correct), ""
     else:
-        correct, score = 0, 0.5  # grader.py will replace this
+        from grader import grade
+        score, rationale = grade(question, user_answer)
+        correct = int(score >= 0.6)
 
     record_attempt(question.id, user_answer, correct, score)
-    return correct, score
+    return correct, score, rationale
