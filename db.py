@@ -142,7 +142,7 @@ if __name__ == "__main__":
         ).fetchall()
         q_count = conn.execute("SELECT COUNT(*) FROM questions").fetchone()[0]
 
-        print(f"DB ready  →  {DB_PATH.resolve()}")
+        print(f"DB ready -> {DB_PATH.resolve()}")
         print(f"Topics: {len(topics)}   Questions: {q_count}\n")
         for t in topics:
             n = conn.execute(
