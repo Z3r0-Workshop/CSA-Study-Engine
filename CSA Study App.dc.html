@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0a0d0e; }
+  body { font-family: 'Space Grotesk', sans-serif; }
+  ::selection { background: rgba(52,211,153,.25); color: #eafff6; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0d1213; }
+  ::-webkit-scrollbar-thumb { background: #243033; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #34d399; }
+  textarea { font-family: 'Space Grotesk', sans-serif; }
+  textarea:focus { outline: none; }
+  @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  @keyframes vIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+  @keyframes evIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:none} }
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(1100px 640px at 78% -12%, rgba(52,211,153,.05), transparent 60%), radial-gradient(900px 600px at -5% 110%, rgba(167,139,250,.05), transparent 55%), #0a0d0e;color:#d7e0dd">
+
+  <!-- ===== TOP BAR ===== -->
+  <div style="position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;padding:14px 26px;background:rgba(11,16,17,.86);backdrop-filter:blur(10px);border-bottom:1px solid rgba(120,140,135,.14)">
+    <div style="display:flex;align-items:center;gap:11px">
+      <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#34d399,#0f8a5e);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:#06140e;box-shadow:0 0 0 1px rgba(52,211,153,.3)">C</div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#eef5f2;line-height:1">CSA Engine</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#54625f;line-height:1.4">study · local · v0.4</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:4px;margin-left:14px;padding:4px;border-radius:11px;border:1px solid rgba(120,140,135,.16);background:#0a0f10">
+      <button onClick="{{ navDash }}" style="{{ navDashStyle }}">Dashboard</button>
+      <button onClick="{{ navStudy }}" style="{{ navStudyStyle }}">Study</button>
+      <button onClick="{{ navEngine }}" style="{{ navEngineStyle }}">Engine</button>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
+      <div style="text-align:right">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7e8d89;letter-spacing:1px">EXAM READINESS</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:{{ read.color }}">{{ read.pct }}% · {{ read.label }}</div>
+      </div>
+      <div style="width:120px;height:8px;border-radius:6px;background:#13191a;overflow:hidden;border:1px solid rgba(120,140,135,.14)">
+        <div style="{{ read.barStyle }}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1120px;margin:0 auto;padding:30px 26px 70px">
+
+    <!-- ============ DASHBOARD ============ -->
+    <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="display:grid;grid-template-columns:1.45fr 1fr;gap:18px;align-items:stretch">
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:linear-gradient(180deg,#11181a,#0d1314);padding:26px 28px;display:flex;flex-direction:column">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:#34d399;text-transform:uppercase">Welcome back</div>
+            <h1 style="margin:8px 0 0;font-size:32px;font-weight:700;letter-spacing:-.6px;color:#f2f8f5;line-height:1.1">Let's close the gap to CSA.</h1>
+            <p style="margin:10px 0 0;color:#9aa8a4;font-size:15px;line-height:1.55;max-width:460px">The scheduler has lined up a session weighted toward your three weakest domains. Free-text answers are graded locally by Ollama.</p>
+            <div style="margin-top:auto;display:flex;gap:12px;align-items:center;padding-top:24px">
+              <button onClick="{{ startSession }}" style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;padding:13px 22px;border-radius:11px;cursor:pointer;border:1px solid rgba(52,211,153,.5);background:linear-gradient(180deg,rgba(52,211,153,.2),rgba(52,211,153,.08));color:#9af7cf;transition:all .15s ease" style-hover="background:rgba(52,211,153,.26);border-color:#34d399;color:#d6fff0">▶ Start adaptive session</button>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#7e8d89">{{ qTotal }} questions queued</span>
+            </div>
+          </div>
+
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:#0d1314;padding:22px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:15px;font-weight:600;color:#eef5f2">Engine snapshot</div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a78bfa;border:1px solid rgba(167,139,250,.3);border-radius:5px;padding:2px 7px">self-improving</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="border:1px solid rgba(245,185,69,.25);border-radius:10px;background:rgba(245,185,69,.05);padding:12px 13px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:#f5b945;line-height:1">{{ engGolden }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9aa8a4;margin-top:2px">golden questions</div>
+              </div>
+              <div style="border:1px solid rgba(52,211,153,.22);border-radius:10px;background:rgba(52,211,153,.05);padding:12px 13px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:#5fe3aa;line-height:1">{{ engActive }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9aa8a4;margin-top:2px">active in bank</div>
+              </div>
+            </div>
+            <div style="border-top:1px dashed rgba(120,140,135,.2);padding-top:13px">
+              <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:#9aa8a4;margin-bottom:6px"><span>logged answers → fine-tune</span><span style="color:#c0aefb">{{ engLogged }} / {{ engTarget }}</span></div>
+              <div style="height:8px;border-radius:6px;background:#13191a;overflow:hidden;border:1px solid rgba(120,140,135,.14)"><div style="{{ engBarStyle }}"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.45fr 1fr;gap:18px;margin-top:18px;align-items:start">
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:#0d1314;overflow:hidden">
+            <div style="padding:16px 22px;border-bottom:1px solid rgba(120,140,135,.12);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:15px;font-weight:600;color:#eef5f2">Domain mastery</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7e8d89">rolling accuracy · exam weight</div>
+            </div>
+            <div style="padding:8px 22px 18px">
+              <sc-for list="{{ topicRows }}" as="t" hint-placeholder-count="9">
+                <div style="display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid rgba(120,140,135,.07)">
+                  <div style="width:9px;height:9px;border-radius:50%;background:{{ t.dot }};flex:none"></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                      <span style="font-size:13.5px;color:#dfe7e4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.name }}</span>
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ t.accColor }};flex:none">{{ t.accPct }}%</span>
+                    </div>
+                    <div style="height:6px;border-radius:5px;background:#13191a;overflow:hidden;margin-top:5px"><div style="{{ t.barStyle }}"></div></div>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7e8d89;flex:none;width:34px;text-align:right">{{ t.weightPct }}%</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:#0d1314;overflow:hidden">
+            <div style="padding:16px 22px;border-bottom:1px solid rgba(120,140,135,.12)">
+              <div style="font-size:15px;font-weight:600;color:#eef5f2">Up next</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7e8d89;margin-top:2px">weight × (1 − accuracy) + unseen</div>
+            </div>
+            <div style="padding:14px 18px 18px;display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ weakRows }}" as="w" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:12px;border:1px solid {{ w.border }};border-radius:11px;background:{{ w.bg }};padding:12px 14px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:{{ w.rankColor }}">{{ w.rank }}</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13.5px;color:#eef5f2;font-weight:500">{{ w.name }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9aa8a4;margin-top:1px">{{ w.meta }}</div>
+                  </div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:{{ w.rankColor }};font-weight:600">{{ w.priority }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ QUIZ ============ -->
+    <sc-if value="{{ isQuiz }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:1fr 296px;gap:18px;align-items:start">
+        <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:linear-gradient(180deg,#11181a,#0d1314);overflow:hidden">
+          <div style="height:5px;background:#13191a"><div style="{{ prog.barStyle }}"></div></div>
+          <div style="padding:24px 28px 28px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7e8d89">QUESTION {{ prog.num }} / {{ prog.total }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 9px;border-radius:6px;border:1px solid {{ topicTagBorder }};background:{{ topicTagBg }};color:{{ topicTagColor }}">{{ topicName }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 9px;border-radius:6px;border:1px solid rgba(120,140,135,.2);color:#9aa8a4">{{ kindLabel }}</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:{{ whyColor }}">{{ whyText }}</span>
+            </div>
+
+            <h2 style="margin:18px 0 0;font-size:23px;font-weight:600;line-height:1.4;color:#f2f8f5;letter-spacing:-.3px;text-wrap:pretty">{{ stem }}</h2>
+
+            <!-- MCQ -->
+            <sc-if value="{{ isMcq }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px">
+                <sc-for list="{{ optionRows }}" as="o" hint-placeholder-count="4">
+                  <button onClick="{{ o.onClick }}" style="{{ o.style }}">
+                    <span style="{{ o.keyStyle }}">{{ o.key }}</span>
+                    <span style="flex:1;text-align:left">{{ o.text }}</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:15px;color:{{ o.markColor }}">{{ o.mark }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- FREE TEXT -->
+            <sc-if value="{{ isFree }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:22px">
+                <textarea value="{{ freeVal }}" onInput="{{ onFree }}" disabled="{{ revealed }}" placeholder="Type your answer — Ollama grades it 0–1 against the model answer…" style="{{ freeStyle }}"></textarea>
+              </div>
+            </sc-if>
+
+            <div style="margin-top:20px">
+              <button onClick="{{ primaryAction }}" style="{{ primaryStyle }}">{{ primaryLabel }}</button>
+            </div>
+
+            <!-- FEEDBACK -->
+            <sc-if value="{{ fb.show }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:22px;border-top:1px solid rgba(120,140,135,.13);padding-top:20px">
+                <div style="display:flex;align-items:center;gap:11px">
+                  <div style="{{ fb.badgeStyle }}">{{ fb.icon }}</div>
+                  <div>
+                    <div style="font-size:15px;font-weight:600;color:{{ fb.color }}">{{ fb.verdict }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7e8d89">{{ fb.sub }}</div>
+                  </div>
+                </div>
+                <sc-if value="{{ fb.showModel }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:14px;border:1px solid rgba(56,189,248,.2);border-radius:10px;background:rgba(56,189,248,.04);padding:12px 15px">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:#7ad0fb;margin-bottom:5px">MODEL ANSWER</div>
+                    <div style="font-size:13.5px;color:#cdd6d3;line-height:1.5">{{ fb.model }}</div>
+                  </div>
+                </sc-if>
+                <div style="margin-top:14px;border:1px solid rgba(120,140,135,.16);border-radius:10px;background:#0b1112;padding:12px 15px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:#9aa8a4;margin-bottom:5px">EXPLANATION</div>
+                  <div style="font-size:13.5px;color:#cdd6d3;line-height:1.55">{{ fb.explanation }}</div>
+                </div>
+
+                <div style="margin-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7e8d89">Train the engine →</span>
+                  <button onClick="{{ rateUp }}" style="{{ rateUpStyle }}">👍 Good question</button>
+                  <button onClick="{{ rateDown }}" style="{{ rateDownStyle }}">👎 Weak</button>
+                  <button onClick="{{ rateFlag }}" style="{{ rateFlagStyle }}">🚩 Flag / confusing</button>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#a78bfa">{{ rateNote }}</span>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <!-- RAIL -->
+        <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:88px">
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:14px;background:#0d1314;padding:16px 18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:#7e8d89;margin-bottom:12px">THIS SESSION</div>
+            <div style="display:flex;gap:18px;margin-bottom:14px">
+              <div><div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:#5fe3aa;line-height:1">{{ sessCorrect }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7e8d89;margin-top:2px">correct</div></div>
+              <div><div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:#eef5f2;line-height:1">{{ sessAnswered }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7e8d89;margin-top:2px">answered</div></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ dotRows }}" as="d" hint-placeholder-count="9">
+                <div style="{{ d.style }}"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border:1px solid rgba(167,139,250,.22);border-radius:14px;background:linear-gradient(180deg,#130f1c,#0c0a14);padding:16px 18px;min-height:150px">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:12px">
+              <span style="width:7px;height:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px #a78bfa"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:#c0aefb">ENGINE · LIVE</span>
+            </div>
+            <sc-if value="{{ hasLive }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ liveRows }}" as="e" hint-placeholder-count="2">
+                  <div style="display:flex;gap:8px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:{{ e.color }};flex:none">{{ e.icon }}</span>
+                    <span style="font-size:11.5px;color:#bcc8c4;line-height:1.4">{{ e.text }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ noLive }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:11.5px;color:#6a7873;line-height:1.5;font-family:'JetBrains Mono',monospace">Answer & rate questions — the engine logs item stats and queues refinements here in real time.</div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ RESULT ============ -->
+    <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:linear-gradient(180deg,#11181a,#0d1314);padding:30px 32px;text-align:center">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:#34d399;text-transform:uppercase">Session complete</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:58px;font-weight:700;color:#f2f8f5;line-height:1.05;margin-top:8px">{{ res.score }}<span style="color:#54625f;font-size:30px"> / {{ res.total }}</span></div>
+          <div style="font-size:16px;color:{{ res.color }};font-weight:600;margin-top:4px">{{ res.verdict }}</div>
+          <div style="display:flex;gap:12px;justify-content:center;margin-top:22px">
+            <button onClick="{{ startSession }}" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:11px 20px;border-radius:10px;cursor:pointer;border:1px solid rgba(52,211,153,.5);background:rgba(52,211,153,.12);color:#9af7cf;transition:all .15s" style-hover="background:rgba(52,211,153,.22)">↻ New session</button>
+            <button onClick="{{ navEngine }}" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:11px 20px;border-radius:10px;cursor:pointer;border:1px solid rgba(167,139,250,.4);background:rgba(167,139,250,.1);color:#c0aefb;transition:all .15s" style-hover="background:rgba(167,139,250,.2)">View engine →</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px;align-items:start">
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:#0d1314;overflow:hidden">
+            <div style="padding:16px 22px;border-bottom:1px solid rgba(120,140,135,.12)">
+              <div style="font-size:15px;font-weight:600;color:#eef5f2">Your mastery moved</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7e8d89;margin-top:2px">scheduler will reweight from here</div>
+            </div>
+            <div style="padding:10px 22px 18px">
+              <sc-for list="{{ res.topicRows }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid rgba(120,140,135,.07)">
+                  <div style="flex:1;font-size:13.5px;color:#dfe7e4">{{ r.name }}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#7e8d89">{{ r.before }}%</div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#54625f">→</span>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#eef5f2;font-weight:600;width:34px;text-align:right">{{ r.after }}%</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:{{ r.deltaColor }};width:46px;text-align:right">{{ r.delta }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border:1px solid rgba(167,139,250,.22);border-radius:16px;background:linear-gradient(180deg,#130f1c,#0c0a14);overflow:hidden">
+            <div style="padding:16px 22px;border-bottom:1px solid rgba(167,139,250,.16)">
+              <div style="font-size:15px;font-weight:600;color:#eef5f2">What the engine learned</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9aa8a4;margin-top:2px">from your answers + votes this session</div>
+            </div>
+            <div style="padding:14px 22px 18px;display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ res.eventRows }}" as="e" hint-placeholder-count="3">
+                <div style="display:flex;gap:11px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:{{ e.color }};flex:none">{{ e.icon }}</span>
+                  <span style="font-size:13px;color:#cdd6d3;line-height:1.5">{{ e.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ ENGINE ============ -->
+    <sc-if value="{{ isEngine }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:13px">
+          <h1 style="margin:0;font-size:28px;font-weight:700;letter-spacing:-.5px;color:#f2f8f5">Two flywheels</h1>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#7e8d89">every answer turns both</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px">
+          <div style="border:1px solid rgba(52,211,153,.28);border-radius:14px;background:linear-gradient(180deg,#0e1a16,#0b1311);padding:20px 22px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5fe3aa;margin-bottom:8px">FLYWHEEL ① — YOU GET SMARTER</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#bcc8c4;line-height:1.9">answer → record attempt →<br>scheduler reweights to weak topics →<br>you see more of what you miss → <span style="color:#5fe3aa">mastery rises</span></div>
+          </div>
+          <div style="border:1px solid rgba(167,139,250,.28);border-radius:14px;background:linear-gradient(180deg,#150f1f,#0e0b16);padding:20px 22px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#c0aefb;margin-bottom:8px">FLYWHEEL ② — THE ENGINE GETS SMARTER</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#bcc8c4;line-height:1.9">answer + 👍/👎/🚩 → item stats →<br>refine · retire · promote · harder variant →<br>better bank → <span style="color:#c0aefb">fine-tune the generator</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:26px;font-size:15px;font-weight:600;color:#eef5f2;margin-bottom:13px">Question lifecycle</div>
+        <div style="display:flex;align-items:stretch;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:150px;border:1px solid rgba(120,140,135,.2);border-radius:12px;background:#0d1314;padding:16px 17px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9aa8a4">CANDIDATE</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#dfe7e4;margin-top:4px">{{ life.candidate }}</div>
+            <div style="font-size:11.5px;color:#7e8d89;margin-top:4px;line-height:1.4">freshly generated, unproven</div>
+          </div>
+          <div style="display:flex;align-items:center;color:#54625f;font-family:'JetBrains Mono',monospace">→</div>
+          <div style="flex:1;min-width:150px;border:1px solid rgba(52,211,153,.3);border-radius:12px;background:rgba(52,211,153,.05);padding:16px 17px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5fe3aa">ACTIVE</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#9af7cf;margin-top:4px">{{ life.active }}</div>
+            <div style="font-size:11.5px;color:#7e8d89;margin-top:4px;line-height:1.4">serving · stats accruing</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;color:#54625f;font-family:'JetBrains Mono',monospace;font-size:11px;gap:2px"><span>↗</span><span>↘</span></div>
+          <div style="flex:1;min-width:150px;border:1px solid rgba(245,185,69,.32);border-radius:12px;background:rgba(245,185,69,.05);padding:16px 17px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f5b945">GOLDEN</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#ffd479;margin-top:4px">{{ life.golden }}</div>
+            <div style="font-size:11.5px;color:#7e8d89;margin-top:4px;line-height:1.4">high difficulty + discrimination</div>
+          </div>
+          <div style="flex:1;min-width:150px;border:1px solid rgba(229,72,77,.28);border-radius:12px;background:rgba(229,72,77,.04);padding:16px 17px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f0888c">RETIRED</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#f0888c;margin-top:4px">{{ life.retired }}</div>
+            <div style="font-size:11.5px;color:#7e8d89;margin-top:4px;line-height:1.4">ambiguous / too easy / disliked</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:18px;margin-top:26px;align-items:start">
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:#0d1314;overflow:hidden">
+            <div style="padding:15px 20px;border-bottom:1px solid rgba(120,140,135,.12);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:14.5px;font-weight:600;color:#eef5f2">Item quality</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7e8d89">p = % correct · disc = discrimination</div>
+            </div>
+            <div style="padding:6px 14px 10px">
+              <div style="display:flex;gap:10px;padding:8px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#54625f;letter-spacing:.5px">
+                <span style="width:48px">ITEM</span><span style="flex:1">TOPIC</span><span style="width:40px;text-align:right">p</span><span style="width:46px;text-align:right">disc</span><span style="width:40px;text-align:right">votes</span><span style="width:74px;text-align:right">STATUS</span>
+              </div>
+              <sc-for list="{{ qualityRows }}" as="q" hint-placeholder-count="5">
+                <div style="display:flex;gap:10px;align-items:center;padding:9px 8px;border-top:1px solid rgba(120,140,135,.08);font-family:'JetBrains Mono',monospace;font-size:12px">
+                  <span style="width:48px;color:#9aa8a4">{{ q.id }}</span>
+                  <span style="flex:1;color:#cdd6d3;font-family:'Space Grotesk',sans-serif;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.topic }}</span>
+                  <span style="width:40px;text-align:right;color:{{ q.pColor }}">{{ q.diff }}</span>
+                  <span style="width:46px;text-align:right;color:#9aa8a4">{{ q.disc }}</span>
+                  <span style="width:40px;text-align:right;color:{{ q.voteColor }}">{{ q.votes }}</span>
+                  <span style="width:74px;text-align:right"><span style="{{ q.badgeStyle }}">{{ q.status }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border:1px solid rgba(120,140,135,.16);border-radius:16px;background:#0d1314;overflow:hidden">
+            <div style="padding:15px 20px;border-bottom:1px solid rgba(120,140,135,.12)">
+              <div style="font-size:14.5px;font-weight:600;color:#eef5f2">Refinement log</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7e8d89;margin-top:2px">newest first · session events highlighted</div>
+            </div>
+            <div style="padding:14px 20px 18px;display:flex;flex-direction:column;gap:13px;max-height:340px;overflow-y:auto">
+              <sc-for list="{{ eventRows }}" as="e" hint-placeholder-count="4">
+                <div style="display:flex;gap:11px;{{ e.wrapExtra }}">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:{{ e.color }};flex:none;line-height:1.3">{{ e.icon }}</span>
+                  <div>
+                    <span style="font-size:12.5px;color:#cdd6d3;line-height:1.5">{{ e.text }}</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:{{ e.tagColor }};margin-left:6px">{{ e.tag }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;border:1px dashed rgba(167,139,250,.3);border-radius:16px;background:#0c0a14;padding:20px 24px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+            <div style="font-size:15px;font-weight:600;color:#eef5f2">Fine-tuning horizon</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#c0aefb">{{ engLogged }} / {{ engTarget }} logged answers</div>
+          </div>
+          <div style="height:9px;border-radius:6px;background:#13191a;overflow:hidden;border:1px solid rgba(120,140,135,.14);margin-top:12px"><div style="{{ engBarStyle }}"></div></div>
+          <div style="font-size:12.5px;color:#9aa8a4;line-height:1.55;margin-top:12px;max-width:760px">At the threshold, the golden set plus your logged answers export as a supervised dataset — the generator gets fine-tuned on <span style="color:#c0aefb">your own</span> question style and misconceptions, the same instinct behind reaching for DistilBERT. Ollama swaps to the tuned model behind <span style="font-family:'JetBrains Mono',monospace;color:#bcc8c4">ollama_client.py</span> with zero changes elsewhere.</div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1120,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  C = { green:'#34d399', greenL:'#5fe3aa', violet:'#a78bfa', violetL:'#c0aefb', cyan:'#38bdf8', cyanL:'#7ad0fb', amber:'#f5b945', red:'#e5484d', redL:'#f0888c', text:'#dfe7e4', muted:'#9aa8a4', dim:'#7e8d89' };
+
+  TOPICS = [
+    { key:'plat',  name:'Platform fundamentals & UI',  weight:0.16, acc:0.82, dot:'#34d399' },
+    { key:'user',  name:'User administration',          weight:0.14, acc:0.41, dot:'#34d399' },
+    { key:'db',    name:'Database & schema',            weight:0.10, acc:0.68, dot:'#38bdf8' },
+    { key:'forms', name:'Lists, filters & forms',       weight:0.12, acc:0.55, dot:'#34d399' },
+    { key:'data',  name:'Data management',              weight:0.12, acc:0.38, dot:'#38bdf8' },
+    { key:'flow',  name:'Tasks & workflow',             weight:0.10, acc:0.60, dot:'#a78bfa' },
+    { key:'notif', name:'Notifications & events',       weight:0.08, acc:0.71, dot:'#a78bfa' },
+    { key:'rep',   name:'Reporting & dashboards',       weight:0.08, acc:0.50, dot:'#f5b945' },
+    { key:'cat',   name:'Service catalog',              weight:0.10, acc:0.44, dot:'#34d399' },
+  ];
+
+  QUESTIONS = [
+    { id:'Q#11', tkey:'user', kind:'mcq',
+      stem:"A user must see the Incident 'Priority' field but be blocked from editing it — enforced no matter which UI they use. Which mechanism?",
+      options:['A UI Policy','An Access Control (ACL) rule','A client script','A Business Rule'], answer:1,
+      explanation:"ACLs secure operations (read / write / create / delete) per table and field. Granting read but denying write makes the field visible yet locked — UI Policies and client scripts only affect the form, not the data layer." },
+    { id:'Q#04', tkey:'data', kind:'mcq',
+      stem:"Data from a CSV first lands in a staging table. What maps those staging fields onto the target table (with coalesce rules)?",
+      options:['A Transform Map','A Business Rule','An Import Probe','A Dictionary Override'], answer:0,
+      explanation:"Import Sets stage raw data; a Transform Map defines field-to-field mapping and the coalesce key that decides insert vs. update into the target table." },
+    { id:'Q#27', tkey:'cat', kind:'mcq',
+      stem:"A new-hire request must bundle a laptop, a phone, and several access requests into one guided ordering experience. What do you build?",
+      options:['A Record Producer','An Order Guide','A single Catalog Item','A Content Item'], answer:1,
+      explanation:"An Order Guide chains multiple catalog items into one guided flow with shared questions, producing several requested items from a single submission." },
+    { id:'Q#18', tkey:'forms', kind:'mcq',
+      stem:"You must make 'Resolution code' mandatory only when Incident State becomes 'Resolved', with no scripting. Correct tool?",
+      options:['A UI Policy','An ACL','A Notification','A Data Policy'], answer:0,
+      explanation:"UI Policies set fields mandatory / read-only / visible based on conditions, client-side and codeless. (A Data Policy enforces server-side but is used to keep rules consistent across imports, not conditional form behaviour.)" },
+    { id:'Q#33', tkey:'rep', kind:'mcq',
+      stem:"Which report type best shows a single KPI — 'open P1 incidents' — as one large headline number on a dashboard?",
+      options:['Pivot table','Single Score','Trend','List'], answer:1,
+      explanation:"The Single Score report renders one aggregate value, ideal as a headline KPI; trend and pivot are for change-over-time and cross-tabs respectively." },
+    { id:'Q#08', tkey:'db', kind:'free',
+      stem:"In a sentence or two: what does a reference field actually store, and what does the user see on the form?",
+      model:"A reference field stores the sys_id of the referenced record, while the form displays that record's configured display value.",
+      keys:['sys_id','display'],
+      explanation:"Reference fields persist the target record's sys_id and show its display value — which is why renaming the target updates the label everywhere it's referenced." },
+    { id:'Q#05', tkey:'notif', kind:'mcq',
+      stem:"An email should fire when an Incident is escalated. The most decoupled, ServiceNow-recommended trigger is:",
+      options:['A scheduled job','A registered Event','A direct gs.email() call','A UI Action'], answer:1,
+      explanation:"Events decouple the trigger from the notification: a business rule fires the event, the notification subscribes to it. This keeps logic and messaging independently maintainable." },
+    { id:'Q#41', tkey:'flow', kind:'free',
+      stem:"Briefly: when would you choose Flow Designer over a classic Workflow for a brand-new automation?",
+      model:"Flow Designer is the current low-code, recommended tool for new process automation; classic Workflow is legacy, kept mainly to maintain existing flows.",
+      keys:['flow designer','legacy'],
+      explanation:"ServiceNow positions Flow Designer as the go-forward automation platform — natural-language triggers, reusable actions and spokes — while classic Workflow remains only for maintaining older automations." },
+    { id:'Q#02', tkey:'plat', kind:'mcq',
+      stem:"Which component is the primary way to navigate to applications and their modules in the classic UI?",
+      options:['The Banner Frame','The Application Navigator','The Content Frame','The Edge'], answer:1,
+      explanation:"The Application Navigator (the filterable left nav) lists applications and modules; the banner frame holds global tools and the content frame renders the selected page." },
+  ];
+
+  // engine seed
+  ENG = { candidate:23, active:61, golden:14, retired:8, logged:847, target:1000 };
+  QUALITY = [
+    { id:'Q#04', topic:'Data management', diff:0.61, disc:0.78, votes:'+12', status:'golden' },
+    { id:'Q#27', topic:'Service catalog', diff:0.39, disc:0.71, votes:'+8', status:'active' },
+    { id:'Q#11', topic:'User administration', diff:0.47, disc:0.66, votes:'+5', status:'active' },
+    { id:'Q#02', topic:'Platform fundamentals', diff:0.94, disc:0.18, votes:'+1', status:'too easy' },
+    { id:'Q#13', topic:'Notifications & events', diff:0.21, disc:0.09, votes:'−4', status:'retired' },
+  ];
+  SEED_EVENTS = [
+    { type:'promote', text:'Q#04 promoted to golden set — difficulty 0.61, discrimination 0.78, +12 votes.' },
+    { type:'rewrite', text:'Q#05 explanation rewritten — 6 of 8 users who missed it confused events with business rules.' },
+    { type:'harder',  text:'Q#02 flagged too easy (p = 0.94 over 41 serves) — generating a harder variant.' },
+    { type:'retire',  text:'Q#13 retired — 3 users flagged the answer as ambiguous; generated replacement queued.' },
+  ];
+  EV_STYLE = {
+    promote:{ icon:'↑', color:'#f5b945' }, rewrite:{ icon:'✎', color:'#c0aefb' },
+    harder:{ icon:'▲', color:'#7ad0fb' },  retire:{ icon:'⊘', color:'#f0888c' },
+    flag:{ icon:'⚑', color:'#c0aefb' },    miss:{ icon:'◵', color:'#7ad0fb' },
+    up:{ icon:'★', color:'#f5b945' },
+  };
+
+  state = {
+    view:'dashboard',
+    mastery: this.TOPICS.reduce((m,t)=>{ m[t.key]=t.acc; return m; }, {}),
+    baseline:null,
+    queue:[], idx:0,
+    selected:null, free:'', revealed:false,
+    results:[], votes:{}, sessionEvents:[],
+  };
+
+  initMastery() {
+    if (this.state.mastery) return;
+    const m = {};
+    this.TOPICS.forEach(t => { m[t.key] = t.acc; });
+    this.state.mastery = m;
+  }
+
+  topicByKey(k) { return this.TOPICS.find(t => t.key === k); }
+  priority(t) { const acc = this.state.mastery[t.key]; return t.weight * (1 - acc); }
+
+  pushEvent(type, text) {
+    const ev = { type, text, key: type + '|' + text };
+    this.setState(s => {
+      if (s.sessionEvents.some(e => e.key === ev.key)) return {};
+      return { sessionEvents: [ev, ...s.sessionEvents] };
+    });
+  }
+
+  startSession() {
+    const order = [...this.QUESTIONS].sort((a,b) =>
+      this.priority(this.topicByKey(b.tkey)) - this.priority(this.topicByKey(a.tkey)));
+    const baseline = Object.assign({}, this.state.mastery);
+    this.setState({ view:'quiz', queue: order, idx:0, selected:null, free:'', revealed:false,
+      results:[], votes:{}, sessionEvents:[], baseline });
+  };
+
+  curQ() { return this.state.queue[this.state.idx]; }
+
+  selectOption(i) { if (!this.state.revealed) this.setState({ selected:i }); }
+  onFree(e) { const v = e.target.value; this.setState({ free:v }); }
+
+  gradeFree(q) {
+    const txt = (this.state.free || '').toLowerCase();
+    const hit = q.keys.filter(k => txt.includes(k));
+    let score = q.keys.length ? hit.length / q.keys.length : 0;
+    if (txt.trim().length > 0 && score === 0) score = 0.1;
+    score = Math.round(score * 100) / 100;
+    const missing = q.keys.filter(k => !txt.includes(k));
+    let rat = hit.length ? 'Captured: ' + hit.join(', ') + '.' : 'Key concepts not detected.';
+    if (missing.length) rat += ' Missing: ' + missing.join(', ') + '.';
+    return { score, correct: score >= 0.6, rationale: rat };
+  }
+
+  submit() {
+    const q = this.curQ();
+    if (q.kind === 'mcq' && this.state.selected == null) return;
+    let correct, score;
+    if (q.kind === 'mcq') { correct = this.state.selected === q.answer; score = correct ? 1 : 0; }
+    else { const g = this.gradeFree(q); correct = g.correct; score = g.score; q._rat = g.rationale; }
+
+    const tkey = q.tkey;
+    const prev = this.state.mastery[tkey];
+    const next = Math.round((prev * 0.7 + (correct ? 1 : score) * 0.3) * 100) / 100;
+    const mastery = Object.assign({}, this.state.mastery, { [tkey]: next });
+
+    this.setState(s => ({ mastery, revealed:true,
+      results: [...s.results, { qid:q.id, tkey, correct, score }] }));
+
+    if (!correct) this.pushEvent('miss', q.id + ' missed — added to the explanation-review queue.');
+  };
+
+  rate(kind) {
+    const q = this.curQ();
+    this.setState(s => ({ votes: Object.assign({}, s.votes, { [q.id]: kind }) }));
+    if (kind === 'flag') this.pushEvent('flag', q.id + ' flagged — queued for human review + explanation rewrite.');
+    else if (kind === 'down') this.pushEvent('retire', q.id + ' down-voted — discrimination re-check; retire if it persists.');
+    else if (kind === 'up') this.pushEvent('up', q.id + ' up-voted — reinforcing its place toward the golden set.');
+  };
+
+  next() {
+    if (this.state.idx + 1 >= this.state.queue.length) { this.setState({ view:'result' }); return; }
+    this.setState(s => ({ idx:s.idx + 1, selected:null, free:'', revealed:false }));
+  };
+
+  pColor(p) { return (p >= 0.4 && p <= 0.8) ? this.C.greenL : (p > 0.8 ? this.C.cyanL : this.C.amber); }
+  statusBadge(st) {
+    const map = {
+      golden:{ c:'#ffd479', b:'rgba(245,185,69,.4)', bg:'rgba(245,185,69,.1)' },
+      active:{ c:'#5fe3aa', b:'rgba(52,211,153,.35)', bg:'rgba(52,211,153,.08)' },
+      'too easy':{ c:'#7ad0fb', b:'rgba(56,189,248,.35)', bg:'rgba(56,189,248,.08)' },
+      retired:{ c:'#f0888c', b:'rgba(229,72,77,.35)', bg:'rgba(229,72,77,.07)' },
+    };
+    const m = map[st] || map.active;
+    return "font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:5px;color:"+m.c+";border:1px solid "+m.b+";background:"+m.bg;
+  }
+
+  navStyle(active) {
+    return "font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .15s ease;border:1px solid "
+      + (active ? 'rgba(52,211,153,.5)' : 'rgba(120,140,135,.2)')
+      + ';background:' + (active ? 'rgba(52,211,153,.12)' : 'transparent')
+      + ';color:' + (active ? '#5fe3aa' : '#7e8d89');
+  }
+
+  bar(pct, color) {
+    return 'height:100%;width:'+pct+'%;border-radius:6px;background:linear-gradient(90deg,'+color+'cc,'+color+');transition:width .5s ease';
+  }
+
+  renderVals() {
+    const C = this.C, s = this.state, view = s.view;
+    if (!s.mastery) this.initMastery();
+
+    // readiness
+    let r = 0; this.TOPICS.forEach(t => r += t.weight * s.mastery[t.key]);
+    const readPct = Math.round(r * 100);
+    const rLabel = readPct >= 75 ? 'exam-ready' : readPct >= 60 ? 'on track' : readPct >= 45 ? 'getting there' : 'early days';
+    const rColor = readPct >= 75 ? C.greenL : readPct >= 60 ? '#9af7cf' : readPct >= 45 ? C.amber : C.redL;
+
+    // dashboard rows
+    const topicRows = this.TOPICS.map(t => {
+      const acc = s.mastery[t.key]; const accPct = Math.round(acc * 100);
+      const aColor = accPct >= 70 ? C.greenL : accPct >= 50 ? C.amber : C.redL;
+      return { name:t.name, weightPct:Math.round(t.weight*100), accPct, dot:t.dot,
+        accColor:aColor, barStyle:this.bar(accPct, aColor) };
+    });
+    const ranked = [...this.TOPICS].sort((a,b) => this.priority(b) - this.priority(a)).slice(0,3);
+    const rankCols = [C.greenL, C.cyanL, C.violetL];
+    const weakRows = ranked.map((t,i) => ({
+      rank:'0'+(i+1), rankColor:rankCols[i],
+      name:t.name, meta:Math.round(s.mastery[t.key]*100)+'% accuracy · weight '+Math.round(t.weight*100)+'%',
+      priority:this.priority(t).toFixed(3),
+      border:i===0?'rgba(52,211,153,.3)':'rgba(120,140,135,.16)', bg:i===0?'rgba(52,211,153,.05)':'#0e1415' }));
+
+    const engBar = this.bar(Math.round(this.ENG.logged/this.ENG.target*100), C.violet);
+
+    // quiz
+    const q = s.queue[s.idx];
+    const out = {
+      isDash:view==='dashboard', isQuiz:view==='quiz', isResult:view==='result', isEngine:view==='engine',
+      navDash:()=>this.setState({view:'dashboard'}),
+      navStudy:()=>{ if(s.view==='quiz'||s.view==='result'){this.setState({view:'quiz'});} else {this.startSession();} },
+      navEngine:()=>this.setState({view:'engine'}),
+      navDashStyle:this.navStyle(view==='dashboard'),
+      navStudyStyle:this.navStyle(view==='quiz'),
+      navEngineStyle:this.navStyle(view==='engine'),
+      read:{ pct:readPct, label:rLabel, color:rColor, barStyle:this.bar(readPct, rColor) },
+      startSession:()=>this.startSession(),
+      qTotal:this.QUESTIONS.length,
+      engGolden:this.ENG.golden, engActive:this.ENG.active, engLogged:this.ENG.logged,
+      engTarget:this.ENG.target, engBarStyle:engBar,
+      topicRows, weakRows,
+    };
+
+    if (view === 'quiz' && q) {
+      const t = this.topicByKey(q.tkey);
+      const accPct = Math.round(s.mastery[q.tkey]*100);
+      const isWeak = ranked.includes(t);
+      const tagMap = { user:[C.green], data:[C.cyan], cat:[C.green], forms:[C.green], rep:[C.amber], db:[C.cyan], notif:[C.violet], flow:[C.violet], plat:[C.green] };
+      const tc = (tagMap[q.tkey]||[C.green])[0];
+      const progPct = Math.round((s.idx) / s.queue.length * 100);
+
+      // options
+      const optionRows = (q.options||[]).map((txt,i) => {
+        const sel = s.selected === i;
+        const isAns = i === q.answer;
+        let bd='rgba(120,140,135,.2)', bg='#0b1112', fg='#cdd6d3', kbg='#161d1e', kfg='#7e8d89', mark='', mc='transparent';
+        if (!s.revealed) {
+          if (sel) { bd='rgba(52,211,153,.5)'; bg='rgba(52,211,153,.08)'; fg='#eafff6'; kbg='rgba(52,211,153,.2)'; kfg=C.greenL; }
+        } else {
+          if (isAns) { bd='rgba(52,211,153,.55)'; bg='rgba(52,211,153,.1)'; fg='#d6fff0'; kbg='rgba(52,211,153,.25)'; kfg=C.greenL; mark='✓'; mc=C.greenL; }
+          else if (sel) { bd='rgba(229,72,77,.5)'; bg='rgba(229,72,77,.08)'; fg='#f5c0c2'; kbg='rgba(229,72,77,.2)'; kfg=C.redL; mark='✕'; mc=C.redL; }
+          else { fg='#7e8d89'; }
+        }
+        return {
+          key:String.fromCharCode(65+i), text:txt, mark, markColor:mc,
+          onClick: s.revealed ? (()=>{}) : (()=>this.selectOption(i)),
+          keyStyle:"font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:none;background:"+kbg+";color:"+kfg,
+          style:"display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:14px 16px;border-radius:11px;cursor:"+(s.revealed?'default':'pointer')+";font-family:'Space Grotesk',sans-serif;font-size:14.5px;transition:all .14s ease;border:1px solid "+bd+";background:"+bg+";color:"+fg,
+        };
+      });
+
+      // primary button
+      let primaryLabel, primaryAction, pStyle;
+      const canSub = q.kind === 'free' ? (s.free.trim().length>0) : (s.selected != null);
+      if (!s.revealed) {
+        primaryLabel = q.kind==='free' ? 'Grade with Ollama →' : 'Submit answer';
+        primaryAction = ()=>this.submit();
+        pStyle = "font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:600;padding:12px 22px;border-radius:10px;border:1px solid "+(canSub?'rgba(52,211,153,.5)':'rgba(120,140,135,.18)')+";background:"+(canSub?'rgba(52,211,153,.14)':'#0e1415')+";color:"+(canSub?'#9af7cf':'#54625f')+";cursor:"+(canSub?'pointer':'not-allowed')+";transition:all .15s";
+      } else {
+        const last = s.idx+1 >= s.queue.length;
+        primaryLabel = last ? 'Finish session →' : 'Next question →';
+        primaryAction = ()=>this.next();
+        pStyle = "font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:600;padding:12px 22px;border-radius:10px;border:1px solid rgba(120,140,135,.3);background:#161d1e;color:#dfe7e4;cursor:pointer;transition:all .15s";
+      }
+
+      // feedback
+      let fb = { show:false };
+      if (s.revealed) {
+        const res = s.results[s.results.length-1];
+        if (q.kind === 'mcq') {
+          const ok = res.correct;
+          fb = { show:true, color: ok?C.greenL:C.redL, icon: ok?'✓':'✕',
+            badgeStyle:"width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:"+(ok?'#06140e':'#fff')+";background:"+(ok?C.green:C.red),
+            verdict: ok?'Correct':'Not quite', sub: ok?'Logged · '+t.name+' accuracy nudged up':'Logged · this topic gets weighted up next time',
+            showModel:false, explanation:q.explanation };
+        } else {
+          const sc = res.score; const ok = res.correct;
+          const col = sc>=0.6?C.greenL:(sc>=0.35?C.amber:C.redL);
+          fb = { show:true, color:col, icon:sc.toFixed(1),
+            badgeStyle:"min-width:42px;height:34px;padding:0 9px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#06140e;background:"+col,
+            verdict:'Graded '+sc.toFixed(2)+' / 1.00', sub:q._rat,
+            showModel:true, model:q.model, explanation:q.explanation };
+        }
+      }
+
+      const vote = s.votes[q.id];
+      const voteBtn = (active,activeCol,activeBg)=> "font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:6px 11px;border-radius:8px;cursor:pointer;transition:all .14s;border:1px solid "+(active?activeCol:'rgba(120,140,135,.2)')+";background:"+(active?activeBg:'#0b1112')+";color:"+(active?activeCol:'#9aa8a4');
+
+      // session rail
+      const answered = s.results.length;
+      const correctN = s.results.filter(x=>x.correct).length;
+      const dotRows = s.queue.map((qq,i)=>{
+        let c='#1c2426';
+        if (i < s.idx) { const rr = s.results[i]; c = rr ? (rr.correct?C.green:C.red) : '#3a4648'; }
+        else if (i === s.idx) c = C.greenL;
+        return { style:"width:14px;height:14px;border-radius:5px;background:"+c+(i===s.idx?";box-shadow:0 0 0 2px rgba(52,211,153,.25)":"") };
+      });
+      const liveRows = s.sessionEvents.slice(0,5).map(e=>({ icon:(this.EV_STYLE[e.type]||{}).icon||'•', color:(this.EV_STYLE[e.type]||{}).color||C.muted, text:e.text }));
+
+      Object.assign(out, {
+        prog:{ num:s.idx+1, total:s.queue.length, barStyle:this.bar(progPct||4, C.green) },
+        topicName:t.name, kindLabel: q.kind==='mcq'?'multiple choice':'free text · LLM-graded',
+        topicTagColor:tc, topicTagBorder:tc+'66', topicTagBg:tc+'14',
+        whyText: isWeak ? '↑ weak topic · '+accPct+'%' : 'reinforcing · '+accPct+'%',
+        whyColor: isWeak ? C.amber : C.dim,
+        stem:q.stem, isMcq:q.kind==='mcq', isFree:q.kind==='free', optionRows,
+        freeVal:s.free, onFree:(e)=>this.onFree(e), revealed:s.revealed,
+        freeStyle:"width:100%;min-height:120px;resize:vertical;padding:14px 16px;border-radius:11px;font-size:14.5px;line-height:1.55;color:#eafff6;background:#0b1112;border:1px solid "+(s.revealed?'rgba(120,140,135,.16)':'rgba(52,211,153,.3)')+";opacity:"+(s.revealed?'.7':'1'),
+        primaryLabel, primaryAction, primaryStyle:pStyle, fb,
+        rateUp:()=>this.rate('up'), rateDown:()=>this.rate('down'), rateFlag:()=>this.rate('flag'),
+        rateUpStyle:voteBtn(vote==='up',C.amber,'rgba(245,185,69,.12)'),
+        rateDownStyle:voteBtn(vote==='down',C.redL,'rgba(229,72,77,.1)'),
+        rateFlagStyle:voteBtn(vote==='flag',C.violetL,'rgba(167,139,250,.12)'),
+        rateNote: vote ? '✓ signal recorded' : '',
+        sessCorrect:correctN, sessAnswered:answered, dotRows,
+        hasLive:liveRows.length>0, noLive:liveRows.length===0, liveRows,
+      });
+    }
+
+    if (view === 'result') {
+      const total = s.results.length;
+      const correctN = s.results.filter(x=>x.correct).length;
+      const pct = total ? Math.round(correctN/total*100) : 0;
+      const verdict = pct>=80?'Strong — keep this cadence':pct>=55?'Solid progress':'The gap is the plan — run it again';
+      const vColor = pct>=80?C.greenL:pct>=55?C.amber:C.redL;
+      const touched = [...new Set(s.results.map(x=>x.tkey))];
+      const resTopicRows = touched.map(k=>{
+        const t=this.topicByKey(k);
+        const before=Math.round((s.baseline?s.baseline[k]:t.acc)*100);
+        const after=Math.round(s.mastery[k]*100);
+        const d=after-before;
+        return { name:t.name, before, after, delta:(d>0?'▲ +':d<0?'▼ ':'· ')+(d===0?'0':Math.abs(d)), deltaColor:d>0?C.greenL:d<0?C.redL:C.dim };
+      });
+      const evs = s.sessionEvents.length ? s.sessionEvents : [{type:'miss',text:'No items flagged this run — your answers matched the bank cleanly.'}];
+      const resEventRows = evs.map(e=>({ icon:(this.EV_STYLE[e.type]||{}).icon||'•', color:(this.EV_STYLE[e.type]||{}).color||C.muted, text:e.text }));
+      Object.assign(out, { res:{ score:correctN, total, color:vColor, verdict, topicRows:resTopicRows, eventRows:resEventRows } });
+    }
+
+    if (view === 'engine') {
+      const qualityRows = this.QUALITY.map(x=>({
+        id:x.id, topic:x.topic, diff:x.diff.toFixed(2), disc:x.disc.toFixed(2), votes:x.votes,
+        pColor:this.pColor(x.diff),
+        voteColor: x.votes.indexOf('−')>=0 ? C.redL : C.greenL,
+        status:x.status, badgeStyle:this.statusBadge(x.status) }));
+      const merged = [
+        ...s.sessionEvents.map(e=>({ ...e, session:true })),
+        ...this.SEED_EVENTS.map(e=>({ ...e, session:false })),
+      ];
+      const eventRows = merged.map(e=>{
+        const st = this.EV_STYLE[e.type]||{ icon:'•', color:C.muted };
+        return { icon:st.icon, color:st.color, text:e.text,
+          tag:e.session?'· this session':'', tagColor:C.violetL,
+          wrapExtra:e.session?'background:rgba(167,139,250,.06);border-radius:8px;padding:7px 9px;margin:-7px -9px':'' };
+      });
+      Object.assign(out, {
+        life:{ candidate:this.ENG.candidate, active:this.ENG.active, golden:this.ENG.golden, retired:this.ENG.retired },
+        qualityRows, eventRows,
+      });
+    }
+
+    return out;
+  }
+}
+</script>
+</body>
+</html>
