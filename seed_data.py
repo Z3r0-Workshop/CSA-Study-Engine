@@ -464,6 +464,414 @@ QUESTIONS = [
             "in sequence — ideal for onboarding bundles or multi-item equipment sets."
         ),
     },
+    # ── User Interface & Navigation (extra) ──────────────────────────────────
+    {
+        "topic": "User Interface & Navigation",
+        "stem": "A user wants to return to the five most recent records they visited without using the Application Navigator. Which UI feature should they use?",
+        "kind": "mcq",
+        "options": [
+            "History tab in the Application Navigator",
+            "Breadcrumbs at the top of the content frame",
+            "The search bar in the Banner Frame",
+            "The Favorites list",
+        ],
+        "answer": "History tab in the Application Navigator",
+        "explanation": (
+            "The History tab (clock icon) in the Application Navigator tracks the last "
+            "records and lists you visited, letting you jump back without a new search."
+        ),
+    },
+    {
+        "topic": "User Interface & Navigation",
+        "stem": "On a ServiceNow form, what does a red asterisk (*) next to a field label indicate?",
+        "kind": "mcq",
+        "options": [
+            "The field is mandatory and must be filled before saving",
+            "The field value was recently changed",
+            "The field is read-only and cannot be edited",
+            "The field is only visible to administrators",
+        ],
+        "answer": "The field is mandatory and must be filled before saving",
+        "explanation": (
+            "A red asterisk marks a mandatory field. ServiceNow will prevent the record "
+            "from saving and display a validation error if the field is left empty."
+        ),
+    },
+    {
+        "topic": "User Interface & Navigation",
+        "stem": "In one or two sentences, explain the difference between a List view and a Form view in ServiceNow.",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "A List view displays multiple records from a table in rows and columns, "
+            "allowing bulk actions and filtering. A Form view displays the full detail "
+            "of a single record, showing all its fields for reading or editing."
+        ),
+        "explanation": (
+            "Lists are the entry point for finding records; forms are where you read "
+            "or update a specific record. Both are rendered inside the Content Frame."
+        ),
+    },
+    # ── Collaboration (extra) ────────────────────────────────────────────────
+    {
+        "topic": "Collaboration",
+        "stem": "Which area of a record shows a chronological log of all field changes, work notes, and comments in one place?",
+        "kind": "mcq",
+        "options": [
+            "Activity Stream",
+            "Audit Log",
+            "Work Notes History",
+            "Related Lists",
+        ],
+        "answer": "Activity Stream",
+        "explanation": (
+            "The Activity Stream (at the bottom of most ITSM forms) combines field "
+            "history, work notes, and additional comments in a single timeline view."
+        ),
+    },
+    {
+        "topic": "Collaboration",
+        "stem": "When an agent writes in the Work Notes field and saves a record, who can see that entry?",
+        "kind": "mcq",
+        "options": [
+            "Only users with the itil role or higher — not the end user (caller)",
+            "Everyone who has access to the record, including the caller",
+            "Only the assigned agent and their manager",
+            "Only administrators with the admin role",
+        ],
+        "answer": "Only users with the itil role or higher — not the end user (caller)",
+        "explanation": (
+            "Work Notes are internal. They appear in the Activity Stream for agents "
+            "but are hidden from the caller and service portal view."
+        ),
+    },
+    {
+        "topic": "Collaboration",
+        "stem": "Briefly describe what the Approval feature does in ServiceNow and give one example of where it is commonly used.",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "Approvals pause a workflow or flow and require one or more designated users "
+            "to approve or reject before processing continues. A common example is a "
+            "Change Request requiring a Change Advisory Board approval before implementation."
+        ),
+        "explanation": (
+            "Approvals are a core governance mechanism in ServiceNow, used in Change "
+            "Management, Service Catalog requests, and HR cases to ensure sign-off "
+            "before work proceeds."
+        ),
+    },
+    # ── Self-Service & Automation (extra) ────────────────────────────────────
+    {
+        "topic": "Self-Service & Automation",
+        "stem": "What is a Virtual Agent in ServiceNow?",
+        "kind": "mcq",
+        "options": [
+            "A conversational AI chatbot that helps users resolve issues without agent involvement",
+            "An automated script that runs on a schedule to process records",
+            "A software robot that performs UI actions in the platform",
+            "An AI model that predicts incident priority at creation time",
+        ],
+        "answer": "A conversational AI chatbot that helps users resolve issues without agent involvement",
+        "explanation": (
+            "Virtual Agent uses NLU-powered conversation flows to guide users to "
+            "self-service resolutions — submitting requests, checking ticket status, "
+            "or finding knowledge articles — without human agent intervention."
+        ),
+    },
+    {
+        "topic": "Self-Service & Automation",
+        "stem": "A company wants end users to report a lost laptop through a friendly web interface without accessing the standard ServiceNow backend. What is the most appropriate tool?",
+        "kind": "mcq",
+        "options": [
+            "Service Portal with a Catalog Item",
+            "A Business Rule triggered by a table event",
+            "A Scheduled Job that polls for email requests",
+            "An Import Set that reads from a CSV upload",
+        ],
+        "answer": "Service Portal with a Catalog Item",
+        "explanation": (
+            "The Service Portal provides a consumer-style UI where users can browse "
+            "catalog items and submit requests. A 'Lost Laptop' catalog item with "
+            "variables collects the needed details and triggers fulfillment."
+        ),
+    },
+    {
+        "topic": "Self-Service & Automation",
+        "stem": "In one or two sentences, explain what Predictive Intelligence does and how it differs from a keyword search.",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "Predictive Intelligence uses machine learning models trained on historical "
+            "data to automatically classify, route, or suggest resolutions for records. "
+            "Unlike keyword search, it understands context and patterns rather than "
+            "matching exact words."
+        ),
+        "explanation": (
+            "Predictive Intelligence is an ML capability — it improves over time as "
+            "more data is fed to the model, whereas keyword search is static and "
+            "only finds literal matches."
+        ),
+    },
+    # ── Database Management (extra) ──────────────────────────────────────────
+    {
+        "topic": "Database Management",
+        "stem": "Every record in every ServiceNow table has a unique identifier stored in which field?",
+        "kind": "mcq",
+        "options": [
+            "sys_id",
+            "record_id",
+            "unique_key",
+            "table_id",
+        ],
+        "answer": "sys_id",
+        "explanation": (
+            "The sys_id is a 32-character GUID automatically assigned to every record "
+            "in ServiceNow. It is the primary key used in all cross-table references."
+        ),
+    },
+    {
+        "topic": "Database Management",
+        "stem": "What is a Reference field in ServiceNow?",
+        "kind": "mcq",
+        "options": [
+            "A field that points to a record in another table and displays its display value",
+            "A read-only field that mirrors the value of another field on the same form",
+            "A field that stores a URL or hyperlink",
+            "A field calculated by a formula at display time",
+        ],
+        "answer": "A field that points to a record in another table and displays its display value",
+        "explanation": (
+            "A Reference field stores the sys_id of the target record but displays "
+            "that record's display value (e.g., a user's full name). The underlying "
+            "database value is always the sys_id."
+        ),
+    },
+    {
+        "topic": "Database Management",
+        "stem": "What is an Import Set in ServiceNow and what problem does it solve?",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "An Import Set is a staging table that receives raw data from an external "
+            "source such as a CSV or web service. A Transform Map then maps and "
+            "coalesces that data into the target ServiceNow table, solving the problem "
+            "of safely loading external data without corrupting existing records."
+        ),
+        "explanation": (
+            "The two-step import (load into staging, then transform) lets you preview "
+            "and validate data before it touches production tables, and the coalesce "
+            "key prevents duplicate record creation."
+        ),
+    },
+    # ── Workflow & Automation (extra) ────────────────────────────────────────
+    {
+        "topic": "Workflow & Automation",
+        "stem": "A Script Include in ServiceNow is best described as:",
+        "kind": "mcq",
+        "options": [
+            "A reusable server-side JavaScript class or function library callable from other scripts",
+            "A client-side script that runs when a form field changes",
+            "A scheduled server-side script that runs at a defined interval",
+            "A REST API endpoint definition",
+        ],
+        "answer": "A reusable server-side JavaScript class or function library callable from other scripts",
+        "explanation": (
+            "Script Includes are server-side libraries. You define a class once and "
+            "call it from Business Rules, Flow Designer scripts, or REST endpoints, "
+            "keeping logic in one maintainable place."
+        ),
+    },
+    {
+        "topic": "Workflow & Automation",
+        "stem": "You need to send a customised email whenever an Incident priority changes to Critical. What is the recommended decoupled approach?",
+        "kind": "mcq",
+        "options": [
+            "Fire a platform Event from a Business Rule; create a Notification that triggers on that Event",
+            "Call gs.sendEmail() directly inside a Business Rule",
+            "Use a Scheduled Job to poll for Critical incidents every minute",
+            "Create a UI Action button that agents click to manually send the email",
+        ],
+        "answer": "Fire a platform Event from a Business Rule; create a Notification that triggers on that Event",
+        "explanation": (
+            "Events decouple the trigger (Business Rule) from the messaging (Notification). "
+            "This means the email logic can change independently of the detection logic, "
+            "and multiple notifications can subscribe to the same event."
+        ),
+    },
+    {
+        "topic": "Workflow & Automation",
+        "stem": "In one or two sentences, explain the difference between a 'before' and an 'after' Business Rule.",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "A 'before' Business Rule runs server-side before the record is written to "
+            "the database, allowing you to modify field values before they are persisted. "
+            "An 'after' Business Rule runs after the database write has committed, "
+            "so the record already has its final saved values."
+        ),
+        "explanation": (
+            "Use 'before' when you need to change what gets saved. Use 'after' when "
+            "you need to react to what was saved — for example, creating a related "
+            "record or sending a notification based on the committed values."
+        ),
+    },
+    # ── Application & Module Development (extra) ─────────────────────────────
+    {
+        "topic": "Application & Module Development",
+        "stem": "What is an Update Set in ServiceNow?",
+        "kind": "mcq",
+        "options": [
+            "A container that captures configuration changes so they can be moved between instances",
+            "A batch of database records exported for backup purposes",
+            "A script that automatically upgrades the platform to a new version",
+            "A set of field-level defaults applied when a new record is created",
+        ],
+        "answer": "A container that captures configuration changes so they can be moved between instances",
+        "explanation": (
+            "Update Sets record every configuration change made while they are active. "
+            "You retrieve and commit them on a target instance (e.g., Production) to "
+            "promote changes from Development or Test."
+        ),
+    },
+    {
+        "topic": "Application & Module Development",
+        "stem": "Which role does a user need to create and manage Update Sets in a non-production ServiceNow instance?",
+        "kind": "mcq",
+        "options": [
+            "admin",
+            "itil",
+            "catalog_admin",
+            "report_admin",
+        ],
+        "answer": "admin",
+        "explanation": (
+            "Managing Update Sets — creating, switching, exporting, and committing — "
+            "requires the admin role. The itil role is for ITSM process work, not "
+            "platform configuration management."
+        ),
+    },
+    {
+        "topic": "Application & Module Development",
+        "stem": "What problem does application scoping solve, and how does the namespace prefix (e.g., x_acme_) help?",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "Application scoping isolates a custom application's artifacts from global "
+            "and other scoped applications, preventing naming conflicts and accidental "
+            "cross-app interference. The namespace prefix (e.g., x_acme_) ensures that "
+            "tables, script includes, and other artifacts have unique names across "
+            "the entire instance."
+        ),
+        "explanation": (
+            "Without scoping, two apps could define a table or script with the same "
+            "name and overwrite each other. Scoping is also required for apps published "
+            "to the ServiceNow Store."
+        ),
+    },
+    # ── Reporting (extra) ────────────────────────────────────────────────────
+    {
+        "topic": "Reporting",
+        "stem": "Which report type is best for showing how a value — such as the number of open incidents — has changed week over week?",
+        "kind": "mcq",
+        "options": [
+            "Trend (line) chart",
+            "Pie chart",
+            "Single Score",
+            "Heatmap",
+        ],
+        "answer": "Trend (line) chart",
+        "explanation": (
+            "A Trend chart plots values over time intervals (daily, weekly, monthly), "
+            "making it the right choice for visualising movement — increases, decreases, "
+            "or plateaus — in a metric over a period."
+        ),
+    },
+    {
+        "topic": "Reporting",
+        "stem": "How can you share a ServiceNow report with a user who does not have a ServiceNow login?",
+        "kind": "mcq",
+        "options": [
+            "Schedule the report to be emailed as a PDF or CSV attachment",
+            "Grant them a temporary guest session token",
+            "Export the report to a shared network drive via FTP",
+            "Reports cannot be shared outside the platform",
+        ],
+        "answer": "Schedule the report to be emailed as a PDF or CSV attachment",
+        "explanation": (
+            "Scheduled reports can be sent to any email address as a PDF, Excel, or "
+            "CSV attachment on a recurring basis — no ServiceNow account required "
+            "by the recipient."
+        ),
+    },
+    {
+        "topic": "Reporting",
+        "stem": "In one or two sentences, explain the difference between a standard Report and Performance Analytics in ServiceNow.",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "A standard Report runs against live data and shows the current state of "
+            "records at the time it is run. Performance Analytics collects scheduled "
+            "data snapshots over time and lets you track trends and KPIs historically."
+        ),
+        "explanation": (
+            "Standard reports answer 'what is true right now?' Performance Analytics "
+            "answers 'how has this changed over time?' — it requires the PA plugin "
+            "and scheduled data collection jobs to be configured."
+        ),
+    },
+    # ── Service Catalog (extra) ──────────────────────────────────────────────
+    {
+        "topic": "Service Catalog",
+        "stem": "What is a Record Producer in the Service Catalog?",
+        "kind": "mcq",
+        "options": [
+            "A catalog item that creates a record in any table (not just sc_request) when submitted",
+            "A scheduled job that auto-creates catalog request records",
+            "A script that generates catalog items from a template",
+            "A report that lists all submitted service requests",
+        ],
+        "answer": "A catalog item that creates a record in any table (not just sc_request) when submitted",
+        "explanation": (
+            "A Record Producer lets users submit a form through the Service Portal "
+            "that creates a record directly in a specified table — for example, an "
+            "Incident or HR Case — giving a consumer-friendly front end to any process."
+        ),
+    },
+    {
+        "topic": "Service Catalog",
+        "stem": "A Catalog UI Policy differs from a regular UI Policy because:",
+        "kind": "mcq",
+        "options": [
+            "It runs on Service Catalog variable fields rather than standard table fields",
+            "It executes server-side instead of client-side",
+            "It applies to every form across all tables simultaneously",
+            "It can only hide or show fields, not make them mandatory",
+        ],
+        "answer": "It runs on Service Catalog variable fields rather than standard table fields",
+        "explanation": (
+            "Catalog UI Policies control the behaviour (mandatory, read-only, visible) "
+            "of catalog item variables. Standard UI Policies operate on regular table "
+            "fields and do not reach catalog variables."
+        ),
+    },
+    {
+        "topic": "Service Catalog",
+        "stem": "Briefly explain what a Catalog Client Script is and give one example of when you would use it.",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "A Catalog Client Script is a client-side JavaScript that runs on a "
+            "catalog item form in response to events like onLoad, onChange, or "
+            "onSubmit. For example, you could use an onChange script to show or hide "
+            "additional variable questions based on the option a user selects."
+        ),
+        "explanation": (
+            "They are the catalog equivalent of regular Client Scripts. They operate "
+            "on catalog variables rather than standard form fields and only run "
+            "in the browser — not on the server."
+        ),
+    },
     # ── CMDB ─────────────────────────────────────────────────────────────────
     {
         "topic": "CMDB",
@@ -511,6 +919,59 @@ QUESTIONS = [
         "explanation": (
             "Discovery automatically identifies devices and applications on your network "
             "and populates or updates their CMDB records without manual data entry."
+        ),
+    },
+    # ── CMDB (extra) ─────────────────────────────────────────────────────────
+    {
+        "topic": "CMDB",
+        "stem": "Which CMDB table is the parent class for all Configuration Item types in ServiceNow?",
+        "kind": "mcq",
+        "options": [
+            "cmdb_ci",
+            "cmdb",
+            "task",
+            "asset",
+        ],
+        "answer": "cmdb_ci",
+        "explanation": (
+            "All CI classes (servers, applications, network gear, etc.) extend cmdb_ci. "
+            "This inheritance means every CI carries the base fields defined on that "
+            "parent table, such as name, managed by, and support group."
+        ),
+    },
+    {
+        "topic": "CMDB",
+        "stem": "What is a CI Relationship in the ServiceNow CMDB?",
+        "kind": "mcq",
+        "options": [
+            "A typed link between two CIs that describes how they depend on or connect to each other",
+            "An approval chain that governs which teams can modify a CI record",
+            "A scheduled scan that checks if a CI is still reachable on the network",
+            "A report that shows all changes made to a single CI over time",
+        ],
+        "answer": "A typed link between two CIs that describes how they depend on or connect to each other",
+        "explanation": (
+            "CI Relationships (e.g., 'Runs on', 'Depends on', 'Hosted on') connect "
+            "CIs into a dependency map. This is critical for impact analysis — knowing "
+            "which services are affected when a server goes down."
+        ),
+    },
+    {
+        "topic": "CMDB",
+        "stem": "In one or two sentences, explain why keeping the CMDB accurate matters for Incident Management.",
+        "kind": "free",
+        "options": [],
+        "answer": (
+            "An accurate CMDB lets agents quickly identify which CIs are affected by "
+            "an incident and trace upstream or downstream dependencies, reducing "
+            "mean time to resolution. It also enables automatic population of the "
+            "'Configuration item' field, linking the incident to the correct asset "
+            "for reporting and SLA tracking."
+        ),
+        "explanation": (
+            "When CMDB data is stale or missing, agents waste time identifying "
+            "affected systems manually, impact assessment is guesswork, and post-incident "
+            "reports lack the CI context needed for root cause analysis."
         ),
     },
 ]

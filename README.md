@@ -84,13 +84,23 @@ All four routes auto-documented by FastAPI. Use `GET /question` to pull the next
 
 ---
 
-### Option 3 — Next.js frontend (recommended for full experience)
+### Option 3 — Docker Compose (full stack, one command)
 
 ```bash
-# Start the FastAPI backend first (see Option 1)
+docker compose up --build
+# API  → http://localhost:8000
+# UI   → http://localhost:3000
+```
+
+Ollama must be running on your host (`ollama serve`). The containers reach it via `host.docker.internal:11434`.
+
+### Option 4 — Next.js frontend + local API (dev mode)
+
+```bash
+# Terminal 1 — API
 uvicorn api:app --reload
 
-# In a second terminal, start the frontend
+# Terminal 2 — frontend
 cd frontend
 npm install
 npm run dev
