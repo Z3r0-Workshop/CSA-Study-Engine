@@ -21,6 +21,9 @@ build/
 .coverage
 htmlcov/
 
+# Claude Code
+.claude/
+
 # Editors
 .vscode/
 .idea/
