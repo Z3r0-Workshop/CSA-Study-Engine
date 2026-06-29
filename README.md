@@ -2,7 +2,7 @@
 
 > Local-first CLI / API study engine for the ServiceNow CSA certification.
 
-![Architecture](architecture.png)
+![Architecture](Architecture.png)
 
 ---
 
