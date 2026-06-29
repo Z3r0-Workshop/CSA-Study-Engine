@@ -32,5 +32,7 @@ htmlcov/
 
 # Next.js frontend
 frontend/.next/
+frontend/out/
 frontend/node_modules/
 frontend/.env.local
+frontend/next-env.d.ts
