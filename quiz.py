@@ -1,12 +1,12 @@
 import random
 
-from db import get_questions, get_topics, record_attempt
+from db import get_questions, record_attempt
 from models import Question, Topic
+from scheduler import next_topic
 
 
 def _pick_topic() -> Topic:
-    """Random topic for now — replaced by scheduler.next_topic() in Phase 5."""
-    return random.choice(get_topics())
+    return next_topic()
 
 
 def next_question() -> tuple[Topic, Question]:
