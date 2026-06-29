@@ -107,6 +107,18 @@ def get_questions(topic_id: int | None = None) -> list[Question]:
     return result
 
 
+def get_question_by_id(question_id: int) -> Question | None:
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT * FROM questions WHERE id = ?", (question_id,)
+        ).fetchone()
+    if row is None:
+        return None
+    d = dict(row)
+    d["options"] = json.loads(d["options"])
+    return Question(**d)
+
+
 def get_attempts(question_id: int) -> list[Attempt]:
     with get_connection() as conn:
         rows = conn.execute(
